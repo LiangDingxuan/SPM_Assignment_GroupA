@@ -1,4 +1,33 @@
-// script.js
+class Building {
+    constructor(buildingType) {
+        this.buildingType = buildingType;
+        this.symbol = this.getSymbol();
+        this.image = this.getImage();
+    }
+
+    getSymbol() {
+        const symbols = {
+            'Residential': 'R',
+            'Industry': 'I',
+            'Commercial': 'C',
+            'Park': 'P',
+            'Road': '*'
+        };
+        return symbols[this.buildingType] || '?';
+    }
+
+    getImage() {
+        const images = {
+            'Residential': 'images/residential.jpg',
+            'Industry': 'images/industry.png',
+            'Commercial': 'images/commercial.jpeg',
+            'Park': 'images/park.jpg',
+            'Road': 'images/road.jpg'
+        };
+        return images[this.buildingType] || '';
+    }
+}
+
 class City {
     constructor(size) {
         this.size = size;
@@ -102,8 +131,6 @@ let currentCity;
 
 function startNewGame(size) {
     currentCity = new City(size);
-    document.getElementById('main-menu').style.display = 'none';
-    document.getElementById('game').style.display = 'block';
     currentCity.display();
 }
 
@@ -112,6 +139,25 @@ function selectBuildingType(index) {
 }
 
 function returnToMenu() {
-    document.getElementById('main-menu').style.display = 'block';
-    document.getElementById('game').style.display = 'none';
+    window.location.href = 'index.html';
+}
+
+function saveGame() {
+    // Placeholder for save game logic
+    alert("Save game functionality not implemented yet.");
+}
+
+function loadSavedGame() {
+    // Placeholder for load game logic
+    alert("Load game functionality not implemented yet.");
+}
+
+function displayHighScores() {
+    // Placeholder for high scores display logic
+    alert("High scores display functionality not implemented yet.");
+}
+
+function exitGame() {
+    // Placeholder for exit game logic
+    alert("Exit game functionality not implemented yet.");
 }
