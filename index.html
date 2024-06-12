@@ -6,39 +6,14 @@
     <title>City Building Game</title>
     <link rel="stylesheet" href="css/styles.css">
 </head>
-<body>
+<body id="index-body">
     <div id="main-menu">
         <h1>Ngee Ann City Building Game</h1>
-        <button onclick="startNewGame(20)">Start New Arcade Game</button>
-        <button onclick="startNewGame(5)">Start New Free Play Game</button>
-        <button onclick="">Display High Score</button>
-        <button onclick="">Load Saved Game</button>
-        <button onclick="">Exit Game</button>
-    </div>
-    <div id="game" style="display:none;">
-        <div id="info">
-            <p id="coins">Coins: 0</p>
-            <p id="turn">Turn: 0</p>
-            <p id="score">Score: 0</p>
-        </div>
-        <div id="city-grid-container">
-            <div id="city-grid"></div>
-        </div>
-        <div id="controls">
-            <label>Select Building Type: </label>
-            <button id="building-btn-1" onclick="selectBuildingType(0)">Building 1</button>
-            <button id="building-btn-2" onclick="selectBuildingType(1)">Building 2</button>
-            <button id="save-game" onclick="">Save Current Game</button>
-            <button onclick="returnToMenu()">Return to Main Menu</button>
-        </div>
-        <div id="legend">
-            <h3>Legend</h3>
-            <p><img src="images/residential.jpg" alt="Residential" class="legend-icon"> Residential</p>
-            <p><img src="images/industry.png" alt="Industry" class="legend-icon"> Industry</p>
-            <p><img src="images/commercial.jpeg" alt="Commercial" class="legend-icon"> Commercial</p>
-            <p><img src="images/park.jpg" alt="Park" class="legend-icon"> Park</p>
-            <p><img src="images/road.jpg" alt="Road" class="legend-icon"> Road</p>
-        </div>
+        <button onclick="window.location.href='arcade.html'">Start New Arcade Game</button>
+        <button onclick="window.location.href='freeplay.html'">Start New Free Play Game</button>
+        <button onclick="displayHighScores()">Display High Scores</button>
+        <button onclick="loadSavedGame()">Load Saved Game</button>
+        <button onclick="exitGame()">Exit Game</button>
     </div>
     <script src="javascript/scripts.js"></script>
 </body>
