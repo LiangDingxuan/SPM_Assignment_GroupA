@@ -1,3 +1,8 @@
+// Toggle popup for difficulty setting
+function togglePopup(popupid) {
+    document.getElementById(popupid).classList.toggle("active");
+}
+
 class Building {
     constructor(buildingType) {
         this.buildingType = buildingType;

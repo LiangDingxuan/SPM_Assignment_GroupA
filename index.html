@@ -7,10 +7,68 @@
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body id="index-body">
+
+    <!-- Popup for difficulty -->
+    <div class = "popup" id = "popup-1">
+        <div class = "overlay"></div>
+        <div class = "content">
+          <div class = "close-btn" onclick = "togglePopup('popup-1')">&times;</div>
+          <h1>Game Level</h1>
+          <p>
+            <div class = "difficulty-container">
+                <button class = "difficulty" onclick = "window.location.href='arcade.html?grid=5'">
+                    <h3>EASY</h3>
+                    <p>5x5 grid</p>
+                </button>
+                <button class = "difficulty" onclick = "window.location.href='arcade.html?grid=7'">
+                    <h3>MEDIUM</h3>
+                    <p>7x7 grid</p>
+                </button>
+                <button class = "difficulty" onclick = "window.location.href='arcade.html?grid=10'">
+                    <h3>HARD</h3>
+                    <p>10x10 grid</p>
+                </button>
+                <button class = "difficulty" onclick = "window.location.href='arcade.html?grid=20'">
+                    <h3>HARD</h3>
+                    <p>20x20 grid</p>
+                </button>
+            </div>
+          </p>
+        </div>
+    </div>
+    <div class = "popup" id = "popup-2">
+        <div class = "overlay"></div>
+        <div class = "content">
+          <div class = "close-btn" onclick = "togglePopup('popup-2')">&times;</div>
+          <h1>Game Level</h1>
+          <p>
+            <div class = "difficulty-container">
+                <button class = "difficulty" onclick = "window.location.href='freeplay.html?grid=5'">
+                    <h3>EASY</h3>
+                    <p>5x5 grid</p>
+                </button>
+                <button class = "difficulty" onclick = "window.location.href='freeplay.html?grid=7'">
+                    <h3>MEDIUM</h3>
+                    <p>7x7 grid</p>
+                </button>
+                <button class = "difficulty" onclick = "window.location.href='freeplay.html?grid=10'">
+                    <h3>HARD</h3>
+                    <p>10x10 grid</p>
+                </button>
+                <button class = "difficulty" onclick = "window.location.href='freeplay.html?grid=20'">
+                    <h3>HARD</h3>
+                    <p>20x20 grid</p>
+                </button>
+            </div>
+          </p>
+        </div>
+    </div>
+
+    <!-- Main Menu -->
     <div id="main-menu">
         <h1>Ngee Ann City Building Game</h1>
-        <button onclick="window.location.href='arcade.html'">Start New Arcade Game</button>
-        <button onclick="window.location.href='freeplay.html'">Start New Free Play Game</button>
+        <button onclick="togglePopup('popup-1')">Start New Arcade Game</button>
+        <button onclick="togglePopup('popup-2')">Start New Free Play Game</button>
         <button onclick="displayHighScores()">Display High Scores</button>
         <button onclick="loadSavedGame()">Load Saved Game</button>
         <button onclick="exitGame()">Exit Game</button>
