@@ -37,7 +37,17 @@
     <script src="javascript/scripts.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            startNewGame(20); // Start Arcade mode with 20x20 grid
+            // Function to get URL parameter
+            function getUrlParameter(name) {
+                name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+                var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+                var results = regex.exec(location.search);
+                return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+            }
+
+            var gridSize = getUrlParameter('grid');
+            gridSize = parseInt(gridSize) || 20;
+            startNewGame(gridSize); // Start Arcade mode with grid
         });
     </script>
 </body>

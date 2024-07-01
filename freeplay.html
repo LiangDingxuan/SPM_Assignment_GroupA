@@ -7,14 +7,11 @@
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-    <div id="game">
+    <div id="sidebar">
         <div id="info">
             <p id="coins">Coins: Infinity</p>
             <p id="turn">Turn: 0</p>
             <p id="score">Score: 0</p>
-        </div>
-        <div id="city-grid-container">
-            <div id="city-grid"></div>
         </div>
         <div id="controls">
             <label>Select Building Type: </label>
@@ -32,10 +29,24 @@
             <p><img src="images/road.jpg" alt="Road" class="legend-icon"> Road</p>
         </div>
     </div>
+    <div id="main-content">
+        <div id="city-grid-container">
+            <div id="city-grid"></div>
+        </div>
+    </div>
     <script src="javascript/scripts.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            startNewGame(5); // Start Free Play mode with 5x5 grid
+                // Function to get URL parameter
+                function getUrlParameter(name) {
+                name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+                var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+                var results = regex.exec(location.search);
+                return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+            }
+            var gridSize = getUrlParameter('grid');
+            gridSize = parseInt(gridSize) || 20;
+            startNewGame(gridSize); // Start Free Play mode with grid
         });
     </script>
 </body>
