@@ -42,7 +42,6 @@ class City {
     this.score = 0;
     this.selectedBuilding = null;
     this.availableBuildings = [];
-    this.demolishMode = false;
     this.updateInfo();
     this.displayAvailableBuildings();
   }
@@ -76,16 +75,11 @@ class City {
   }
 
   handleCellClick(x, y) {
-    if (this.demolishMode) {
-        this.demolishBuilding(x, y);
-        this.demolishMode = false;
-        this.updateInfo();
-        this.display();
-    } else if (this.selectedBuilding) {
-        const building = new Building(this.selectedBuilding);
-        this.placeBuilding(building, x, y);
-    } else if (!this.demolishMode) {
-        alert("Please select a building type first.");
+    if (this.selectedBuilding) {
+      const building = new Building(this.selectedBuilding);
+      this.placeBuilding(building, x, y);
+    } else {
+      alert("Please select a building type first.");
     }
   }
 
@@ -110,8 +104,6 @@ class City {
   }
 
   isValidPlacement(x, y) {
-    let validPlacement = false;
-  
     if (
       x < 0 ||
       x >= this.size ||
@@ -121,49 +113,15 @@ class City {
     ) {
       return false;
     }
-  
-    // Check if the grid is empty
-    let gridIsEmpty = true;
-    for (let i = 0; i < this.size; i++) {
-      for (let j = 0; j < this.size; j++) {
-        if (this.grid[i][j] !== " ") {
-          gridIsEmpty = false;
-          break;
-        }
-      }
+    if (this.turnNumber === 0) {
+      return true;
     }
-  
-    if (gridIsEmpty) {
-      validPlacement = true;
-    } else {
-      // Check for adjacent cells
-      if (this.turnNumber === 0) {
-        validPlacement = true;
-      } else {
-        validPlacement =
-          (x > 0 && this.grid[x - 1][y] !== " ") ||
-          (x < this.size - 1 && this.grid[x + 1][y] !== " ") ||
-          (y > 0 && this.grid[x][y - 1] !== " ") ||
-          (y < this.size - 1 && this.grid[x][y + 1] !== " ");
-      }
-    }
-  
-    return validPlacement;
-  }
-
-  demolishBuilding(x, y) {
-    if (this.coins > 0 && this.grid[x][y] !== " ") {
-      this.grid[x][y] = " ";
-      this.coins -= 1;
-      this.updateInfo();
-      this.display();
-    } else {
-      if (this.coins <= 0) {
-        alert("Cannot demolish. You have no coins left.");
-      } else {
-          alert("Cannot demolish. No building is present.");
-      }
-    }
+    return (
+      (x > 0 && this.grid[x - 1][y] !== " ") ||
+      (x < this.size - 1 && this.grid[x + 1][y] !== " ") ||
+      (y > 0 && this.grid[x][y - 1] !== " ") ||
+      (y < this.size - 1 && this.grid[x][y + 1] !== " ")
+    );
   }
 
   updateScoreAndCoins() {
@@ -340,11 +298,6 @@ class City {
   }
 }
 
-function demolish() {
-  currentCity.demolishMode = true;
-}
-
-
 let currentCity;
 
 function startNewGame(size) {
@@ -361,13 +314,54 @@ function returnToMenu() {
 }
 
 function saveGame() {
-  // Placeholder for save game logic
-  alert("Save game functionality not implemented yet.");
+  const saveName = prompt("Enter a name for your save file:");
+  if (!saveName) return; // If the user cancels the prompt
+
+  const gameState = {
+    size: currentCity.size,
+    grid: currentCity.grid,
+    coins: currentCity.coins,
+    turnNumber: currentCity.turnNumber,
+    score: currentCity.score,
+    selectedBuilding: currentCity.selectedBuilding,
+    availableBuildings: currentCity.availableBuildings,
+  };
+
+  localStorage.setItem(
+    `cityBuildingGame_${saveName}`,
+    JSON.stringify(gameState)
+  );
+  alert(`Game saved as "${saveName}"`);
 }
 
+function loadGame(saveName) {
+  const savedGame = localStorage.getItem(`cityBuildingGame_${saveName}`);
+  if (!savedGame) {
+    alert(`No saved game found with the name "${saveName}"`);
+    return;
+  }
+
+  const gameState = JSON.parse(savedGame);
+
+  currentCity = new City(gameState.size);
+  currentCity.grid = gameState.grid;
+  currentCity.coins = gameState.coins;
+  currentCity.turnNumber = gameState.turnNumber;
+  currentCity.score = gameState.score;
+  currentCity.selectedBuilding = gameState.selectedBuilding;
+  currentCity.availableBuildings = gameState.availableBuildings;
+
+  currentCity.updateInfo();
+  currentCity.display();
+  currentCity.displayAvailableBuildings();
+}
+
+// Function to prompt and load a saved game
 function loadSavedGame() {
-  // Placeholder for load game logic
-  alert("Load game functionality not implemented yet.");
+  const saveName = prompt("Enter the name of your saved game:");
+  if (saveName) {
+    window.location.href = `arcade.html?load=${saveName}`;
+  }
 }
 
 function displayHighScores() {
@@ -379,3 +373,20 @@ function exitGame() {
   // Placeholder for exit game logic
   alert("Exit game functionality not implemented yet.");
 }
+
+// Check if there's a load parameter in the URL and load the game
+window.onload = function () {
+  const urlParams = new URLSearchParams(window.location.search);
+  const loadSaveName = urlParams.get("load");
+  if (loadSaveName) {
+    const savedGame = localStorage.getItem(`cityBuildingGame_${loadSaveName}`);
+    if (savedGame) {
+      loadGame(loadSaveName);
+    } else {
+      alert(
+        `No saved game found with the name "${loadSaveName}". Returning to the main menu.`
+      );
+      window.location.href = "index.html"; // Redirect to main menu if save file doesn't exist
+    }
+  }
+};
