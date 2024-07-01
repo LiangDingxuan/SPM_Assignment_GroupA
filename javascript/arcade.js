@@ -314,13 +314,54 @@ function returnToMenu() {
 }
 
 function saveGame() {
-  // Placeholder for save game logic
-  alert("Save game functionality not implemented yet.");
+  const saveName = prompt("Enter a name for your save file:");
+  if (!saveName) return; // If the user cancels the prompt
+
+  const gameState = {
+    size: currentCity.size,
+    grid: currentCity.grid,
+    coins: currentCity.coins,
+    turnNumber: currentCity.turnNumber,
+    score: currentCity.score,
+    selectedBuilding: currentCity.selectedBuilding,
+    availableBuildings: currentCity.availableBuildings,
+  };
+
+  localStorage.setItem(
+    `cityBuildingGame_${saveName}`,
+    JSON.stringify(gameState)
+  );
+  alert(`Game saved as "${saveName}"`);
 }
 
+function loadGame(saveName) {
+  const savedGame = localStorage.getItem(`cityBuildingGame_${saveName}`);
+  if (!savedGame) {
+    alert(`No saved game found with the name "${saveName}"`);
+    return;
+  }
+
+  const gameState = JSON.parse(savedGame);
+
+  currentCity = new City(gameState.size);
+  currentCity.grid = gameState.grid;
+  currentCity.coins = gameState.coins;
+  currentCity.turnNumber = gameState.turnNumber;
+  currentCity.score = gameState.score;
+  currentCity.selectedBuilding = gameState.selectedBuilding;
+  currentCity.availableBuildings = gameState.availableBuildings;
+
+  currentCity.updateInfo();
+  currentCity.display();
+  currentCity.displayAvailableBuildings();
+}
+
+// Function to prompt and load a saved game
 function loadSavedGame() {
-  // Placeholder for load game logic
-  alert("Load game functionality not implemented yet.");
+  const saveName = prompt("Enter the name of your saved game:");
+  if (saveName) {
+    window.location.href = `arcade.html?load=${saveName}`;
+  }
 }
 
 function displayHighScores() {
@@ -332,3 +373,20 @@ function exitGame() {
   // Placeholder for exit game logic
   alert("Exit game functionality not implemented yet.");
 }
+
+// Check if there's a load parameter in the URL and load the game
+window.onload = function () {
+  const urlParams = new URLSearchParams(window.location.search);
+  const loadSaveName = urlParams.get("load");
+  if (loadSaveName) {
+    const savedGame = localStorage.getItem(`cityBuildingGame_${loadSaveName}`);
+    if (savedGame) {
+      loadGame(loadSaveName);
+    } else {
+      alert(
+        `No saved game found with the name "${loadSaveName}". Returning to the main menu.`
+      );
+      window.location.href = "index.html"; // Redirect to main menu if save file doesn't exist
+    }
+  }
+};

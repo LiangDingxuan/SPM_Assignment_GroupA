@@ -4,8 +4,15 @@ function togglePopup(popupid) {
 }
 
 function loadSavedGame() {
-    // Placeholder for load game logic
-    alert("Load game functionality not implemented yet.");
+    const saveName = prompt("Enter the name of your saved game:");
+    if (saveName) {
+        const savedGame = localStorage.getItem(`cityBuildingGame_${saveName}`);
+        if (savedGame) {
+            window.location.href = `arcade.html?load=${saveName}`;
+        } else {
+            alert(`No saved game found with the name "${saveName}".`);
+        }
+    }
 }
 
 function displayHighScores() {

@@ -47,8 +47,14 @@
             }
 
             var gridSize = getUrlParameter('grid');
-            gridSize = parseInt(gridSize) || 20;
-            startNewGame(gridSize); // Start Arcade mode with grid
+            var saveName = getUrlParameter('load');
+
+            if (saveName) {
+                loadGame(saveName); // Load the saved game
+            } else {
+                gridSize = parseInt(gridSize) || 20;
+                startNewGame(gridSize); // Start Arcade mode with grid
+            }
         });
     </script>
 </body>
