@@ -18,8 +18,6 @@
             <label>Select Building Type: </label>
             <button id="building-btn-1" onclick="selectBuildingType(0)">Building 1</button>
             <button id="building-btn-2" onclick="selectBuildingType(1)">Building 2</button>
-            <label>Game Menu: </label>
-            <button onclick="demolish()">Demolish Building</button>
             <button id="save-game" onclick="saveGame()">Save Current Game</button>
             <button onclick="returnToMenu()">Return to Main Menu</button>
         </div>
@@ -49,8 +47,14 @@
             }
 
             var gridSize = getUrlParameter('grid');
-            gridSize = parseInt(gridSize) || 20;
-            startNewGame(gridSize); // Start Arcade mode with grid
+            var saveName = getUrlParameter('load');
+
+            if (saveName) {
+                loadGame(saveName); // Load the saved game
+            } else {
+                gridSize = parseInt(gridSize) || 20;
+                startNewGame(gridSize); // Start Arcade mode with grid
+            }
         });
     </script>
 </body>
