@@ -42,6 +42,7 @@ class City {
     this.score = 0;
     this.selectedBuilding = null;
     this.availableBuildings = [];
+    this.demolishMode = false;
     this.updateInfo();
     this.displayAvailableBuildings();
   }
@@ -75,11 +76,16 @@ class City {
   }
 
   handleCellClick(x, y) {
-    if (this.selectedBuilding) {
-      const building = new Building(this.selectedBuilding);
-      this.placeBuilding(building, x, y);
-    } else {
-      alert("Please select a building type first.");
+    if (this.demolishMode) {
+        this.demolishBuilding(x, y);
+        this.demolishMode = false;
+        this.updateInfo();
+        this.display();
+    } else if (this.selectedBuilding) {
+        const building = new Building(this.selectedBuilding);
+        this.placeBuilding(building, x, y);
+    } else if (!this.demolishMode) {
+        alert("Please select a building type first.");
     }
   }
 
@@ -104,6 +110,8 @@ class City {
   }
 
   isValidPlacement(x, y) {
+    let validPlacement = false;
+  
     if (
       x < 0 ||
       x >= this.size ||
@@ -113,15 +121,49 @@ class City {
     ) {
       return false;
     }
-    if (this.turnNumber === 0) {
-      return true;
+  
+    // Check if the grid is empty
+    let gridIsEmpty = true;
+    for (let i = 0; i < this.size; i++) {
+      for (let j = 0; j < this.size; j++) {
+        if (this.grid[i][j] !== " ") {
+          gridIsEmpty = false;
+          break;
+        }
+      }
     }
-    return (
-      (x > 0 && this.grid[x - 1][y] !== " ") ||
-      (x < this.size - 1 && this.grid[x + 1][y] !== " ") ||
-      (y > 0 && this.grid[x][y - 1] !== " ") ||
-      (y < this.size - 1 && this.grid[x][y + 1] !== " ")
-    );
+  
+    if (gridIsEmpty) {
+      validPlacement = true;
+    } else {
+      // Check for adjacent cells
+      if (this.turnNumber === 0) {
+        validPlacement = true;
+      } else {
+        validPlacement =
+          (x > 0 && this.grid[x - 1][y] !== " ") ||
+          (x < this.size - 1 && this.grid[x + 1][y] !== " ") ||
+          (y > 0 && this.grid[x][y - 1] !== " ") ||
+          (y < this.size - 1 && this.grid[x][y + 1] !== " ");
+      }
+    }
+  
+    return validPlacement;
+  }
+
+  demolishBuilding(x, y) {
+    if (this.coins > 0 && this.grid[x][y] !== " ") {
+      this.grid[x][y] = " ";
+      this.coins -= 1;
+      this.updateInfo();
+      this.display();
+    } else {
+      if (this.coins <= 0) {
+        alert("Cannot demolish. You have no coins left.");
+      } else {
+          alert("Cannot demolish. No building is present.");
+      }
+    }
   }
 
   updateScoreAndCoins() {
@@ -297,6 +339,11 @@ class City {
       this.availableBuildings[1];
   }
 }
+
+function demolish() {
+  currentCity.demolishMode = true;
+}
+
 
 let currentCity;
 
