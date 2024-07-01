@@ -37,7 +37,11 @@ class City {
     constructor(size) {
         this.size = size;
         this.grid = Array.from({ length: size }, () => Array(size).fill(' '));
-        this.coins = size === 20 ? 16 : Infinity;
+        this.coins = (size === 20) ? 20 :
+        (size === 10) ? 16 :
+        (size === 7) ? 12 :
+        (size === 5) ? 8 : 
+        Infinity;
         this.turnNumber = 0;
         this.score = 0;
         this.selectedBuilding = null;
