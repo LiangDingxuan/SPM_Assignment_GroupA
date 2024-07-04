@@ -6,40 +6,77 @@
     <title>City Building Game</title>
     <link rel="stylesheet" href="css/styles.css">
 </head>
-<body>
+<body id="index-body">
+    
+    <!-- Popup for difficulty -->
+    <div class = "popup" id = "popup-1">
+        <div class = "overlay"></div>
+        <div class = "content">
+          <div class = "close-btn" onclick = "togglePopup('popup-1')">&times;</div>
+          <h1>Game Level</h1>
+          <p>
+            <div class = "difficulty-container">
+                <button class = "difficulty" onclick = "window.location.href='arcade.html?grid=5'">
+                    <h3>EASY</h3>
+                    <p>5x5 grid</p>
+                </button>
+                <button class = "difficulty" onclick = "window.location.href='arcade.html?grid=7'">
+                    <h3>MEDIUM</h3>
+                    <p>7x7 grid</p>
+                </button>
+                <button class = "difficulty" onclick = "window.location.href='arcade.html?grid=10'">
+                    <h3>HARD</h3>
+                    <p>10x10 grid</p>
+                </button>
+                <button class = "difficulty" onclick = "window.location.href='arcade.html?grid=20'">
+                    <h3>HARD</h3>
+                    <p>20x20 grid</p>
+                </button>
+            </div>
+          </p>
+        </div>
+    </div>
+    <div class = "popup" id = "popup-2">
+        <div class = "overlay"></div>
+        <div class = "content">
+          <div class = "close-btn" onclick = "togglePopup('popup-2')">&times;</div>
+          <h1>Game Level</h1>
+          <p>
+            <div class = "difficulty-container">
+                <button class = "difficulty" onclick = "window.location.href='freeplay.html?grid=5'">
+                    <h3>EASY</h3>
+                    <p>5x5 grid</p>
+                </button>
+                <button class = "difficulty" onclick = "window.location.href='freeplay.html?grid=7'">
+                    <h3>MEDIUM</h3>
+                    <p>7x7 grid</p>
+                </button>
+                <button class = "difficulty" onclick = "window.location.href='freeplay.html?grid=10'">
+                    <h3>HARD</h3>
+                    <p>10x10 grid</p>
+                </button>
+                <button class = "difficulty" onclick = "window.location.href='freeplay.html?grid=20'">
+                    <h3>HARD</h3>
+                    <p>20x20 grid</p>
+                </button>
+            </div>
+          </p>
+        </div>
+    </div>
+
+    <!-- lottie animation -->
+    <dotlottie-player src="https://lottie.host/0c7d29c2-e2ad-4484-9839-7f60a27c27b8/bSJK1BC7Z5.json" background="transparent" speed="1" style="width: 500px; height: 200px;" loop autoplay></dotlottie-player>
+
+    <!-- Main Menu -->
     <div id="main-menu">
         <h1>Ngee Ann City Building Game</h1>
-        <button onclick="startNewGame(20)">Start New Arcade Game</button>
-        <button onclick="startNewGame(5)">Start New Free Play Game</button>
-        <button onclick="">Display High Score</button>
-        <button onclick="">Load Saved Game</button>
-        <button onclick="">Exit Game</button>
+        <button onclick="togglePopup('popup-1')">Start New Arcade Game</button>
+        <button onclick="togglePopup('popup-2')">Start New Free Play Game</button>
+        <button onclick="displayHighScores()">Display High Scores</button>
+        <button onclick="loadSavedGame()">Load Saved Game</button>
+        <button onclick="exitGame()">Exit Game</button>
     </div>
-    <div id="game" style="display:none;">
-        <div id="info">
-            <p id="coins">Coins: 0</p>
-            <p id="turn">Turn: 0</p>
-            <p id="score">Score: 0</p>
-        </div>
-        <div id="city-grid-container">
-            <div id="city-grid"></div>
-        </div>
-        <div id="controls">
-            <label>Select Building Type: </label>
-            <button id="building-btn-1" onclick="selectBuildingType(0)">Building 1</button>
-            <button id="building-btn-2" onclick="selectBuildingType(1)">Building 2</button>
-            <button id="save-game" onclick="">Save Current Game</button>
-            <button onclick="returnToMenu()">Return to Main Menu</button>
-        </div>
-        <div id="legend">
-            <h3>Legend</h3>
-            <p><img src="images/residential.jpg" alt="Residential" class="legend-icon"> Residential</p>
-            <p><img src="images/industry.png" alt="Industry" class="legend-icon"> Industry</p>
-            <p><img src="images/commercial.jpeg" alt="Commercial" class="legend-icon"> Commercial</p>
-            <p><img src="images/park.jpg" alt="Park" class="legend-icon"> Park</p>
-            <p><img src="images/road.jpg" alt="Road" class="legend-icon"> Road</p>
-        </div>
-    </div>
-    <script src="javascript/scripts.js"></script>
+    <script src="javascript/mainmenu.js"></script>
+    <script src="https://unpkg.com/@dotlottie/player-component@latest/dist/dotlottie-player.mjs" type="module"></script>
 </body>
 </html>
