@@ -169,7 +169,8 @@ demolishBuilding(x, y) {
 updateScoreAndCoins() {
   this.score = 0;
   let industryCount = 0;
-  let roadCount = 0;
+  let roadSet = new Set(); // Initialize the set for tracking roads
+
   for (let i = 0; i < this.size; i++) {
     for (let j = 0; j < this.size; j++) {
       const building = this.grid[i][j];
@@ -184,12 +185,11 @@ updateScoreAndCoins() {
         } else if (building.buildingType === "Park") {
           this.score += this.calculateParkScore(i, j);
         } else if (building.buildingType === "Road") {
-          roadCount = this.calculateRoadScore(i, j, roadCount);
+          this.score += this.calculateRoadScore(i, j, roadSet);
         }
       }
     }
   }
-  this.score += roadCount;
   this.coins += this.calculateIndustryCoins(industryCount);
 }
 
@@ -243,6 +243,8 @@ calculateCommercialScore(x, y) {
 calculateParkScore(x, y) {
   let score = 0;
   const adjacentPositions = [
+    [x - 1, y],
+    [x + 1, y],
     [x, y - 1],
     [x, y + 1],
   ];
@@ -257,15 +259,24 @@ calculateParkScore(x, y) {
   return score;
 }
 
-calculateRoadScore(x, y, roadCount) {
+calculateRoadScore(x, y, roadSet) {
   let score = 0;
-  for (let i = 0; i < this.size; i++) {
-    if (this.grid[x][i].buildingType === "Road") {
-      score += 1;
+  const adjacentPositions = [
+    [x, y - 1],
+    [x, y + 1],
+  ];
+
+  for (const [adjX, adjY] of adjacentPositions) {
+    if (this.isInBounds(adjX, adjY) && this.grid[adjX][adjY].buildingType === "Road") {
+      const road = `${adjX},${adjY}`;
+      if (!roadSet.has(road)) {
+        score += 1;
+        roadSet.add(road);
+      }
     }
   }
-  roadCount += score;
-  return roadCount;
+
+  return score;
 }
 
 calculateIndustryCoins(industryCount) {
@@ -293,6 +304,8 @@ calculateIndustryCoins(industryCount) {
   }
   return coins;
 }
+
+
 
 isInBounds(x, y) {
   return x >= 0 && x < this.size && y >= 0 && y < this.size;
