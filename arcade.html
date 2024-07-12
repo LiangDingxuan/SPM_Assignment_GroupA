@@ -1,61 +1,87 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Arcade Mode - Ngee Ann City Building Game</title>
-    <link rel="stylesheet" href="css/styles.css">
-</head>
-<body>
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
     <div id="sidebar">
-        <div id="info">
-            <p id="gamemode">Arcade Mode</p>
-            <p id="coins">Coins: 0</p>
-            <p id="turn">Turn: 0</p>
-            <p id="score">Score: 0</p>
-        </div>
-        <div id="controls">
-            <label>Select Building Type: </label>
-            <button id="building-btn-1" onclick="selectBuildingType(0)">Building 1</button>
-            <button id="building-btn-2" onclick="selectBuildingType(1)">Building 2</button>
-            <button id="save-game" onclick="saveGame()">Save Current Game</button>
-            <button onclick="returnToMenu()">Return to Main Menu</button>
-        </div>
-        <div id="legend">
-            <h3>Legend</h3>
-            <p><img src="images/residential.jpg" alt="Residential" class="legend-icon"> Residential</p>
-            <p><img src="images/industry.png" alt="Industry" class="legend-icon"> Industry</p>
-            <p><img src="images/commercial.jpeg" alt="Commercial" class="legend-icon"> Commercial</p>
-            <p><img src="images/park.jpg" alt="Park" class="legend-icon"> Park</p>
-            <p><img src="images/road.jpg" alt="Road" class="legend-icon"> Road</p>
-        </div>
+      <div id="info">
+        <p id="gamemode">Arcade Mode</p>
+        <p id="coins">Coins: 0</p>
+        <p id="turn">Turn: 0</p>
+        <p id="score">Score: 0</p>
+      </div>
+      <div id="controls">
+        <label>Select Building Type: </label>
+        <button id="building-btn-1" onclick="selectBuildingType(0)">
+          Building 1
+        </button>
+        <button id="building-btn-2" onclick="selectBuildingType(1)">
+          Building 2
+        </button>
+        <label>Demolish: </label>
+        <button onclick="demolish()">Demolish Building</button>
+        <label>Game Menu: </label>
+        <button id="save-game" onclick="saveGame()">Save Current Game</button>
+        <button onclick="returnToMenu()">Return to Main Menu</button>
+      </div>
+      <div id="legend">
+        <h3>Legend</h3>
+        <p>
+          <img
+            src="images/residential.jpg"
+            alt="Residential"
+            class="legend-icon"
+          />
+          Residential
+        </p>
+        <p>
+          <img src="images/industry.png" alt="Industry" class="legend-icon" />
+          Industry
+        </p>
+        <p>
+          <img
+            src="images/commercial.jpeg"
+            alt="Commercial"
+            class="legend-icon"
+          />
+          Commercial
+        </p>
+        <p><img src="images/park.jpg" alt="Park" class="legend-icon" /> Park</p>
+        <p><img src="images/road.jpg" alt="Road" class="legend-icon" /> Road</p>
+      </div>
     </div>
     <div id="main-content">
-        <div id="city-grid-container">
-            <div id="city-grid"></div>
-        </div>
+      <div id="city-grid-container">
+        <div id="city-grid"></div>
+      </div>
     </div>
     <script src="./javascript/arcade.js"></script>
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            // Function to get URL parameter
-            function getUrlParameter(name) {
-                name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
-                var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
-                var results = regex.exec(location.search);
-                return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
-            }
+      document.addEventListener("DOMContentLoaded", function () {
+        // Function to get URL parameter
+        function getUrlParameter(name) {
+          name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+          var regex = new RegExp("[\\?&]" + name + "=([^&#]*)");
+          var results = regex.exec(location.search);
+          return results === null
+            ? ""
+            : decodeURIComponent(results[1].replace(/\+/g, " "));
+        }
 
-            var gridSize = getUrlParameter('grid');
-            var saveName = getUrlParameter('load');
+        var gridSize = getUrlParameter("grid");
+        var saveName = getUrlParameter("load");
 
-            if (saveName) {
-                loadGame(saveName); // Load the saved game
-            } else {
-                gridSize = parseInt(gridSize) || 20;
-                startNewGame(gridSize); // Start Arcade mode with grid
-            }
-        });
+        if (saveName) {
+          loadGame(saveName); // Load the saved game
+        } else {
+          gridSize = parseInt(gridSize) || 20;
+          startNewGame(gridSize); // Start Arcade mode with grid
+        }
+      });
     </script>
-</body>
+  </body>
 </html>
