@@ -81,62 +81,46 @@ class City {
 
   // Places a building on the grid
   placeBuilding(building, x, y) {
-    if (this.isValidPlacement(x, y)) {
-      this.grid[x][y] = building;
-      this.turnNumber += 1;
-      this.expandGridIfNeeded(x, y);
-      this.display();
-      this.selectedBuilding = null;
-    } else {
-      alert("Invalid placement. Buildings must be placed adjacent to existing buildings.");
-    }
+    this.grid[x][y] = building;
+    this.turnNumber += 1;
+    this.expandGridIfNeeded(x, y);
+    this.display();
+    this.selectedBuilding = null;
   }
 
   // Expands the grid if a building is placed on the border
   expandGridIfNeeded(x, y) {
+    if (this.size >= 25) {
+      return; // Stop expanding if the grid size is already 25x25
+    }
+
     if (x === 0 || y === 0 || x === this.size - 1 || y === this.size - 1) {
-      this.size += 10;
-      const newGrid = Array.from({ length: this.size }, () => Array(this.size).fill(" "));
+      this.size = Math.min(this.size + 10, 25); // Ensure the grid size does not exceed 25
+
+      const newGrid = Array.from({ length: this.size }, () =>
+        Array(this.size).fill(" ")
+      );
+      const offset = Math.floor((this.size - this.grid.length) / 2);
+
       for (let i = 0; i < this.grid.length; i++) {
         for (let j = 0; j < this.grid[i].length; j++) {
-          newGrid[i + 5][j + 5] = this.grid[i][j];
+          newGrid[i + offset][j + offset] = this.grid[i][j];
         }
       }
       this.grid = newGrid;
     }
   }
 
-  // Checks if the placement of a building is valid
-  isValidPlacement(x, y) {
-    let validPlacement = false;
-
-    if (x < 0 || x >= this.size || y < 0 || y >= this.size || this.grid[x][y] !== " ") {
-      return false;
-    }
-
-    let gridIsEmpty = true;
-    for (let i = 0; i < this.size; i++) {
-      for (let j = 0; j < this.size; j++) {
-        if (this.grid[i][j] !== " ") {
-          gridIsEmpty = false;
-          break;
-        }
-      }
-    }
-
-    if (gridIsEmpty) {
-      validPlacement = true;
+  // Demolishes a building at the specified coordinates
+  demolishBuilding(x, y) {
+    if (this.grid[x][y] !== " ") {
+      this.grid[x][y] = " ";
+      this.updateInfo();
+      this.display();
     } else {
-      validPlacement = (x > 0 && this.grid[x - 1][y] !== " ") ||
-                       (x < this.size - 1 && this.grid[x + 1][y] !== " ") ||
-                       (y > 0 && this.grid[x][y - 1] !== " ") ||
-                       (y < this.size - 1 && this.grid[x][y + 1] !== " ");
+      alert("Cannot demolish. No building is present.");
     }
-
-    return validPlacement;
   }
-
-
 }
 
 let city = null;
@@ -171,4 +155,3 @@ function saveGame() {
 function loadGame(saveName) {
   city.loadGame(saveName);
 }
-//bob
