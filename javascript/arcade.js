@@ -392,6 +392,7 @@ function saveGame() {
   if (!saveName) return; // If the user cancels the prompt
 
   const gameState = {
+    mode: "arcade",
     size: currentCity.size,
     grid: currentCity.grid,
     coins: currentCity.coins,
@@ -431,13 +432,6 @@ function loadGame(saveName) {
   currentCity.displayAvailableBuildings();
 }
 
-// Function to prompt and load a saved game
-function loadSavedGame() {
-  const saveName = prompt("Enter the name of your saved game:");
-  if (saveName) {
-    window.location.href = `arcade.html?load=${saveName}`;
-  }
-}
 
 // Function to display high scores
 function displayHighScores() {
