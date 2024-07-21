@@ -4,19 +4,12 @@ function togglePopup(popupid) {
 }
 
 // Class representing a building
-// Toggle popup for difficulty setting
-function togglePopup(popupid) {
-  document.getElementById(popupid).classList.toggle("active");
-}
-
-// Class representing a building
 class Building {
   constructor(buildingType) {
     this.buildingType = buildingType;
     this.image = this.getImage();
   }
 
-  // Method to get the image based on the building type
   // Method to get the image based on the building type
   getImage() {
     const images = {
@@ -31,12 +24,10 @@ class Building {
 }
 
 // Class representing the city grid
-// Class representing the city grid
 class City {
   constructor(size) {
     this.size = size;
     this.grid = Array.from({ length: size }, () => Array(size).fill(" "));
-    this.coins = Infinity;
     this.coins = Infinity;
     this.turnNumber = 0;
     this.score = 0;
@@ -50,11 +41,12 @@ class City {
   // Method to update the game information on the UI
   updateInfo() {
     document.getElementById("coins").textContent = `Coins: ${this.coins}`;
-    document.getElementById("coins").textContent = `Coins: ${this.coins}`;
     document.getElementById("turn").textContent = `Turn: ${this.turnNumber}`;
+    document.getElementById("score").textContent = `Score: ${this.score}`;
+    document.getElementById("profit").textContent = `Profit: ${this.profit}`;
+    document.getElementById("upkeep").textContent = `Upkeep: ${this.upkeep}`;
   }
 
-  // Method to display the city grid
   // Method to display the city grid
   display() {
     const gridContainer = document.getElementById("city-grid");
@@ -79,7 +71,6 @@ class City {
   }
 
   // Method to handle cell click events
-  // Method to handle cell click events
   handleCellClick(x, y) {
     if (this.demolishMode) {
       this.demolishBuilding(x, y);
@@ -90,12 +81,10 @@ class City {
       const building = new Building(this.selectedBuilding);
       this.placeBuilding(building, x, y);
     } else if (!this.demolishMode) {
-    } else if (!this.demolishMode) {
       alert("Please select a building type first.");
     }
   }
 
-  // Method to place a building on the grid
   // Method to place a building on the grid
   placeBuilding(building, x, y) {
     if (this.isValidPlacement(x, y)) {
@@ -155,10 +144,6 @@ class City {
 
       const offset = Math.floor((this.size - oldSize) / 2);
 
-      const offset = Math.floor((this.size - oldSize) / 2);
-
-      for (let i = 0; i < oldSize; i++) {
-        for (let j = 0; j < oldSize; j++) {
       for (let i = 0; i < oldSize; i++) {
         for (let j = 0; j < oldSize; j++) {
           newGrid[i + offset][j + offset] = this.grid[i][j];
@@ -166,27 +151,16 @@ class City {
       }
       this.grid = newGrid;
       this.display();
-      this.display();
     }
   }
 
   // Method to demolish a building on the grid
-  // Method to demolish a building on the grid
   demolishBuilding(x, y) {
-    if (this.coins > 0 && this.grid[x][y] !== " ") {
     if (this.coins > 0 && this.grid[x][y] !== " ") {
       this.grid[x][y] = " ";
       this.coins -= 1;
       this.updateInfo();
       this.display();
-    } else {
-      if (this.coins <= 0) {
-        alert("Cannot demolish. You have no coins left.");
-      } else {
-        alert("Cannot demolish. No building is present.");
-      }
-    }
-  }
     } else {
       if (this.coins <= 0) {
         alert("Cannot demolish. You have no coins left.");
@@ -438,7 +412,6 @@ class City {
 }
 
 // Function to enable demolish mode
-// Function to enable demolish mode
 function demolish() {
   currentCity.demolishMode = true;
 }
@@ -454,30 +427,13 @@ function startNewGame(size) {
 // Function to select a building type
 function selectBuildingType(index) {
   currentCity.selectedBuilding = index;
-  currentCity.demolishMode = true;
 }
 
-let currentCity;
-
-// Function to start a new game
-function startNewGame(size) {
-  currentCity = new City(size);
-  currentCity.display();
-}
-
-// Function to select a building type
-function selectBuildingType(index) {
-  currentCity.selectedBuilding = index;
-}
-
-// Function to return to the main menu
 // Function to return to the main menu
 function returnToMenu() {
   window.location.href = "index.html";
-  window.location.href = "index.html";
 }
 
-// Function to save the current game state
 // Function to save the current game state
 function saveGame() {
   const saveName = prompt("Enter a name for your save file:");
