@@ -30,15 +30,21 @@ class City {
     this.grid = Array.from({ length: size }, () => Array(size).fill(" "));
     this.coins = Infinity;
     this.turnNumber = 0;
+    this.score = 0;
+    this.profit = 0;
+    this.upkeep = 0;
     this.selectedBuilding = null;
     this.demolishMode = false;
+    this.consecutiveLossTurns = 0; // Track consecutive loss turns
     this.updateInfo();
   }
-
   // Method to update the game information on the UI
   updateInfo() {
     document.getElementById("coins").textContent = `Coins: ${this.coins}`;
     document.getElementById("turn").textContent = `Turn: ${this.turnNumber}`;
+    document.getElementById("score").textContent = `Score: ${this.score}`;
+    document.getElementById("profit").textContent = `Profit: ${this.profit}`;
+    document.getElementById("upkeep").textContent = `Upkeep: ${this.upkeep}`;
   }
 
   // Method to display the city grid
@@ -83,10 +89,21 @@ class City {
   placeBuilding(building, x, y) {
     if (this.isValidPlacement(x, y)) {
       this.grid[x][y] = building;
+      this.coins -= 1;
       this.turnNumber += 1;
+      this.updateScoreAndCoins();
+      this.updateProfitAndUpkeep();
       this.updateInfo();
       this.display();
       this.selectedBuilding = null;
+      if (this.profit < this.upkeep) {
+        this.consecutiveLossTurns += 1;
+      } else {
+        this.consecutiveLossTurns = 0;
+      }
+      if (this.consecutiveLossTurns >= 20) {
+        this.displayFinalScore();
+      }
       if (this.isEdge(x, y)) {
         this.expandGrid();
       }
@@ -141,6 +158,7 @@ class City {
   demolishBuilding(x, y) {
     if (this.coins > 0 && this.grid[x][y] !== " ") {
       this.grid[x][y] = " ";
+      this.coins -= 1;
       this.updateInfo();
       this.display();
     } else {
@@ -150,6 +168,187 @@ class City {
         alert("Cannot demolish. No building is present.");
       }
     }
+  }
+
+  // Method to update the score and coins
+  updateScoreAndCoins() {
+    this.score = 0;
+    let industryCount = 0;
+    let roadSet = new Set(); // Initialize the set for tracking roads
+
+    for (let i = 0; i < this.size; i++) {
+      for (let j = 0; j < this.size; j++) {
+        const building = this.grid[i][j];
+        if (building !== " ") {
+          if (building.buildingType === "Residential") {
+            this.score += this.calculateResidentialScore(i, j);
+          } else if (building.buildingType === "Industry") {
+            this.score += 1;
+            industryCount += 1;
+          } else if (building.buildingType === "Commercial") {
+            this.score += this.calculateCommercialScore(i, j);
+          } else if (building.buildingType === "Park") {
+            this.score += this.calculateParkScore(i, j);
+          } else if (building.buildingType === "Road") {
+            this.score += this.calculateRoadScore(i, j, roadSet);
+          }
+        }
+      }
+    }
+    this.coins += this.calculateIndustryCoins(industryCount);
+  }
+
+  // Method to update profit and upkeep
+  updateProfitAndUpkeep() {
+    this.profit = 0;
+    this.upkeep = 0;
+
+    for (let i = 0; i < this.size; i++) {
+      for (let j = 0; j < this.size; j++) {
+        const building = this.grid[i][j];
+        if (building !== " ") {
+          if (building.buildingType === "Residential") {
+            this.profit += 1;
+            // Check cluster upkeep
+            if (this.isCluster(i, j, "Residential")) {
+              this.upkeep += 1;
+            }
+          } else if (building.buildingType === "Industry") {
+            this.profit += 2;
+            this.upkeep += 1;
+          } else if (building.buildingType === "Commercial") {
+            this.profit += 3;
+            this.upkeep += 2;
+          } else if (building.buildingType === "Park") {
+            this.upkeep += 1;
+          } else if (building.buildingType === "Road") {
+            this.upkeep += 1; // Each unconnected road segment costs 1 coin to upkeep
+          }
+        }
+      }
+    }
+
+    this.coins -= this.upkeep;
+  }
+
+  // Method to calculate the score for residential buildings
+  calculateResidentialScore(x, y) {
+    let score = 0;
+    const adjacentPositions = [
+      [x - 1, y],
+      [x + 1, y],
+      [x, y - 1],
+      [x, y + 1],
+    ];
+    for (const [adjX, adjY] of adjacentPositions) {
+      if (this.isInBounds(adjX, adjY)) {
+        const adjBuilding = this.grid[adjX][adjY];
+        if (adjBuilding.buildingType === "Industry") {
+          return 1;
+        } else if (
+          adjBuilding.buildingType === "Residential" ||
+          adjBuilding.buildingType === "Commercial"
+        ) {
+          score += 1;
+        } else if (adjBuilding.buildingType === "Park") {
+          score += 2;
+        }
+      }
+    }
+    return score;
+  }
+
+  // Method to calculate the score for commercial buildings
+  calculateCommercialScore(x, y) {
+    let score = 0;
+    const adjacentPositions = [
+      [x - 1, y],
+      [x + 1, y],
+      [x, y - 1],
+      [x, y + 1],
+    ];
+    for (const [adjX, adjY] of adjacentPositions) {
+      if (this.isInBounds(adjX, adjY)) {
+        const adjBuilding = this.grid[adjX][adjY];
+        if (adjBuilding.buildingType === "Commercial") {
+          score += 1;
+        } else if (adjBuilding.buildingType === "Residential") {
+          this.coins += 1;
+        }
+      }
+    }
+    return score;
+  }
+
+  // Method to calculate the score for park buildings
+  calculateParkScore(x, y) {
+    let score = 0;
+    const adjacentPositions = [
+      [x - 1, y],
+      [x + 1, y],
+      [x, y - 1],
+      [x, y + 1],
+    ];
+    for (const [adjX, adjY] of adjacentPositions) {
+      if (this.isInBounds(adjX, adjY)) {
+        const adjBuilding = this.grid[adjX][adjY];
+        if (adjBuilding.buildingType === "Park") {
+          score += 1;
+        }
+      }
+    }
+    return score;
+  }
+
+  // Method to calculate the score for road buildings
+  calculateRoadScore(x, y, roadSet) {
+    let score = 0;
+    const adjacentPositions = [
+      [x, y - 1],
+      [x, y + 1],
+    ];
+
+    for (const [adjX, adjY] of adjacentPositions) {
+      if (
+        this.isInBounds(adjX, adjY) &&
+        this.grid[adjX][adjY].buildingType === "Road"
+      ) {
+        const road = `${adjX},${adjY}`;
+        if (!roadSet.has(road)) {
+          score += 1;
+          roadSet.add(road);
+        }
+      }
+    }
+
+    return score;
+  }
+
+  // Method to calculate the coins generated by industry buildings
+  calculateIndustryCoins(industryCount) {
+    let coins = 0;
+    for (let i = 0; i < this.size; i++) {
+      for (let j = 0; j < this.size; j++) {
+        const building = this.grid[i][j];
+        if (building !== " " && building.buildingType === "Residential") {
+          const adjacentPositions = [
+            [i - 1, j],
+            [i + 1, j],
+            [i, j - 1],
+            [i, j + 1],
+          ];
+          for (const [adjX, adjY] of adjacentPositions) {
+            if (
+              this.isInBounds(adjX, adjY) &&
+              this.grid[adjX][adjY].buildingType === "Industry"
+            ) {
+              coins += 1;
+            }
+          }
+        }
+      }
+    }
+    return coins;
   }
 
   // Method to check if the coordinates are within the bounds of the grid
@@ -176,7 +375,39 @@ class City {
 
   // Method to display the final score
   displayFinalScore() {
-    alert(`Game Over! Your final score is: ${this.turnNumber}`);
+    alert(`Game Over! Your final score is: ${this.score}`);
+  }
+
+  // Method to check if a cluster of buildings of the same type is adjacent
+  isCluster(x, y, buildingType) {
+    const visited = new Set();
+    const queue = [[x, y]];
+    const directions = [
+      [-1, 0],
+      [1, 0],
+      [0, -1],
+      [0, 1],
+    ];
+
+    while (queue.length > 0) {
+      const [cx, cy] = queue.shift();
+      if (visited.has(`${cx},${cy}`)) continue;
+      visited.add(`${cx},${cy}`);
+
+      for (const [dx, dy] of directions) {
+        const nx = cx + dx,
+          ny = cy + dy;
+        if (
+          this.isInBounds(nx, ny) &&
+          !visited.has(`${nx},${ny}`) &&
+          this.grid[nx][ny].buildingType === buildingType
+        ) {
+          queue.push([nx, ny]);
+        }
+      }
+    }
+
+    return visited.size > 1;
   }
 }
 
@@ -214,7 +445,11 @@ function saveGame() {
     grid: currentCity.grid,
     coins: currentCity.coins,
     turnNumber: currentCity.turnNumber,
+    score: currentCity.score,
+    profit: currentCity.profit,
+    upkeep: currentCity.upkeep,
     selectedBuilding: currentCity.selectedBuilding,
+    availableBuildings: currentCity.availableBuildings,
   };
 
   localStorage.setItem(
@@ -238,6 +473,9 @@ function loadGame(saveName) {
   currentCity.grid = gameState.grid;
   currentCity.coins = Infinity;
   currentCity.turnNumber = gameState.turnNumber;
+  currentCity.score = gameState.score;
+  currentCity.profit = gameState.profit;
+  currentCity.upkeep = gameState.upkeep;
   currentCity.selectedBuilding = gameState.selectedBuilding;
   currentCity.updateInfo();
   currentCity.display();
