@@ -24,8 +24,7 @@ function loadSavedGame() {
   
 
 function displayHighScores() {
-  // Placeholder for high scores display logic
-  alert("High scores display functionality not implemented yet.");
+  window.location.href = "highscore.html";
 }
 
 function exitGame() {

@@ -183,3 +183,28 @@ input, button, select {
 .content h1 {
     text-align: center;
 }
+
+
+
+#high-scores {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    max-width: 800px;
+}
+
+#arcade-scores, #freeplay-scores {
+    width: 45%;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+li {
+    background: #f4f4f4;
+    margin: 5px 0;
+    padding: 10px;
+    border-radius: 5px;
+}
