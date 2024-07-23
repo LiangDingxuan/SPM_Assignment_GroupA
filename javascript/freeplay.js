@@ -1,3 +1,7 @@
+const freeplayApiUrl =
+  "https://spmassignment-26ad.restdb.io/rest/freeplayscore";
+const apiKey = "66a01ceabcd2edd04c50bed0";
+
 // Toggle popup for difficulty setting
 function togglePopup(popupid) {
   document.getElementById(popupid).classList.toggle("active");
@@ -107,10 +111,6 @@ class City {
       if (this.isEdge(x, y)) {
         this.expandGrid();
       }
-    } else {
-      alert(
-        "Invalid placement. Buildings must be placed adjacent to existing buildings."
-      );
     }
   }
 
@@ -373,11 +373,28 @@ class City {
     return true;
   }
 
-  // Method to display the final score
+  // Method to display the final score and check for high score
   displayFinalScore() {
     alert(`Game Over! Your final score is: ${this.score}`);
+    this.checkAndUpdateHighScore();
   }
-
+  // Method to check and update high score
+  async checkAndUpdateHighScore() {
+    if (await isHighScore(this.score)) {
+      const playerName = prompt(
+        "Congratulations! You made it to the high score list. Enter your name:"
+      );
+      if (playerName) {
+        await updateHighScores(playerName, this.score);
+        alert("High score list updated!");
+        window.location.href = "index.html"; // Navigate back to index.html after updating high scores
+      } else {
+        alert("Name entry cancelled. High score list not updated.");
+      }
+    } else {
+      alert("You did not make it to the high score list.");
+    }
+  }
   // Method to check if a cluster of buildings of the same type is adjacent
   isCluster(x, y, buildingType) {
     const visited = new Set();
@@ -409,6 +426,59 @@ class City {
 
     return visited.size > 1;
   }
+}
+// Function to fetch high scores from the RestDB
+async function fetchHighScores(url) {
+  const response = await fetch(url, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "x-apikey": apiKey,
+    },
+  });
+  return response.json();
+}
+
+// Function to check if the current score is a high score
+async function isHighScore(score) {
+  const freeplayScores = await fetchHighScores(freeplayApiUrl);
+  freeplayScores.sort((a, b) => b.score - a.score);
+  if (
+    freeplayScores.length < 10 ||
+    score > freeplayScores[freeplayScores.length - 1].score
+  ) {
+    return true;
+  }
+  return false;
+}
+
+// Function to update high scores in the RestDB
+async function updateHighScores(name, score) {
+  const freeplayScores = await fetchHighScores(freeplayApiUrl);
+  freeplayScores.sort((a, b) => b.score - a.score);
+
+  if (freeplayScores.length >= 10) {
+    // Remove the lowest score if there are already 10 scores
+    const lowestScore = freeplayScores.pop();
+    await fetch(`${freeplayApiUrl}/${lowestScore._id}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        "x-apikey": apiKey,
+      },
+    });
+  }
+
+  // Add the new score
+  const newScore = { name, score };
+  await fetch(freeplayApiUrl, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-apikey": apiKey,
+    },
+    body: JSON.stringify(newScore),
+  });
 }
 
 // Function to enable demolish mode
@@ -479,18 +549,6 @@ function loadGame(saveName) {
   currentCity.selectedBuilding = gameState.selectedBuilding;
   currentCity.updateInfo();
   currentCity.display();
-}
-
-// Function to display high scores
-function displayHighScores() {
-  // Placeholder for high scores display logic
-  alert("High scores display functionality not implemented yet.");
-}
-
-// Function to exit the game
-function exitGame() {
-  // Placeholder for exit game logic
-  alert("Exit game functionality not implemented yet.");
 }
 
 // Check if there's a load parameter in the URL and load the game

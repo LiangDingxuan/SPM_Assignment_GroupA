@@ -1,3 +1,6 @@
+const arcadeApiUrl = "https://spmassignment-26ad.restdb.io/rest/arcadescore";
+const apiKey = "66a01ceabcd2edd04c50bed0";
+
 // Toggle popup for difficulty setting
 function togglePopup(popupid) {
   document.getElementById(popupid).classList.toggle("active");
@@ -334,9 +337,28 @@ class City {
     return true;
   }
 
-  // Method to display the final score
+  // Method to display the final score and check for high score
   displayFinalScore() {
     alert(`Game Over! Your final score is: ${this.score}`);
+    this.checkAndUpdateHighScore();
+  }
+
+  // Method to check and update high score
+  async checkAndUpdateHighScore() {
+    if (await isHighScore(this.score)) {
+      const playerName = prompt(
+        "Congratulations! You made it to the high score list. Enter your name:"
+      );
+      if (playerName) {
+        await updateHighScores(playerName, this.score);
+        alert("High score list updated!");
+        window.location.href = "index.html"; // Navigate back to index.html after updating high scores
+      } else {
+        alert("Name entry cancelled. High score list not updated.");
+      }
+    } else {
+      alert("You did not make it to the high score list.");
+    }
   }
 
   // Method to display the available buildings
@@ -361,6 +383,59 @@ class City {
     document.getElementById("building-btn-2").textContent =
       this.availableBuildings[1];
   }
+}
+// Function to fetch high scores from the RestDB
+async function fetchHighScores(url) {
+  const response = await fetch(url, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "x-apikey": apiKey,
+    },
+  });
+  return response.json();
+}
+
+// Function to check if the current score is a high score
+async function isHighScore(score) {
+  const arcadeScores = await fetchHighScores(arcadeApiUrl);
+  arcadeScores.sort((a, b) => b.score - a.score);
+  if (
+    arcadeScores.length < 10 ||
+    score > arcadeScores[arcadeScores.length - 1].score
+  ) {
+    return true;
+  }
+  return false;
+}
+
+// Function to update high scores in the RestDB
+async function updateHighScores(name, score) {
+  const arcadeScores = await fetchHighScores(arcadeApiUrl);
+  arcadeScores.sort((a, b) => b.score - a.score);
+
+  if (arcadeScores.length >= 10) {
+    // Remove the lowest score if there are already 10 scores
+    const lowestScore = arcadeScores.pop();
+    await fetch(`${arcadeApiUrl}/${lowestScore._id}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        "x-apikey": apiKey,
+      },
+    });
+  }
+
+  // Add the new score
+  const newScore = { name, score };
+  await fetch(arcadeApiUrl, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-apikey": apiKey,
+    },
+    body: JSON.stringify(newScore),
+  });
 }
 
 // Function to enable demolish mode
