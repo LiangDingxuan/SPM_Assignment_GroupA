@@ -17,9 +17,9 @@ async function fetchHighScores(url) {
 function displayScores(scores, elementId) {
   const listElement = document.getElementById(elementId);
   listElement.innerHTML = "";
-  scores.slice(0, 10).forEach((score) => {
+  scores.slice(0, 10).forEach((score, index) => {
     const listItem = document.createElement("li");
-    listItem.textContent = `${score.name}: ${score.score}`;
+    listItem.textContent = `${index + 1}. ${score.name}: ${score.score}`;
     listElement.appendChild(listItem);
   });
 }
@@ -83,4 +83,9 @@ async function updateHighScores(name, score) {
   });
 
   loadHighScores(); // Reload the high scores to display the updated list
+}
+
+// Function to return to the main menu
+function returnToMenu() {
+  window.location.href = "index.html";
 }
